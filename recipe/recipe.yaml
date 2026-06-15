@@ -2,7 +2,6 @@ schema_version: 1
 
 context:
   name: typst-py
-  pypi_name: typst
   version: "0.14.9"
 
 package:
@@ -10,7 +9,7 @@ package:
   version: ${{ version }}
 
 source:
-  url: https://pypi.org/packages/source/${{ pypi_name[0] }}/${{ pypi_name }}/typst-${{ version }}.tar.gz
+  url: https://pypi.org/packages/source/t/typst/typst-${{ version }}.tar.gz
   sha256: 53a7ee0825c127c100023685eeb8fb911226d7ad9ae861a370c11bb0f5c160cc
 
 build:
@@ -19,13 +18,12 @@ build:
 requirements:
   build:
     - if: build_platform != target_platform
-      then: python
-    - if: build_platform != target_platform
-      then: cross-python_${{ target_platform }}
-    - if: build_platform != target_platform
-      then: maturin
+      then:
+        - python
+        - cross-python_${{ target_platform }}
+        - maturin
     - ${{ compiler('c') }}
-    - ${{ stdlib("c") }}
+    - ${{ stdlib('c') }}
     - ${{ compiler('rust') }}
     - cargo-bundle-licenses
     - make
