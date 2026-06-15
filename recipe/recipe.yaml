@@ -14,6 +14,10 @@ source:
 
 build:
   number: 1
+  # only build for the minimal python version
+  skip: is_abi3 and not is_python_min
+  python:
+    version_independent: true
   script:
     env:
       CARGO_PROFILE_RELEASE_STRIP: symbols
@@ -48,6 +52,9 @@ requirements:
     - python
     - maturin >=1.0,<2.0
     - pip
+    - if: is_abi3
+      then: python-abi3
+
   run:
     - python
 
@@ -56,6 +63,21 @@ tests:
       imports:
         - typst
       pip_check: true
+      python_version:
+        - "*"
+        - ${{ python_min }}
+  - if: is_abi3
+    then:
+      script:
+        - if: win
+          then: abi3audit %PREFIX%/Lib/site-packages/typst/typst.pyd -s -v --assume-minimum-abi3 ${{ python_min }}
+          else:
+            - export SP_DIR=$(python -c "import site; print(site.getsitepackages()[0])")
+            - abi3audit $SP_DIR/typst/typst.abi3.so -s -v --assume-minimum-abi3 ${{ python_min }}
+      requirements:
+        run:
+          - abi3audit
+
 
 about:
   summary: Python binding to typst
