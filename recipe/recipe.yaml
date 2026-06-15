@@ -1,0 +1,56 @@
+schema_version: 1
+
+context:
+  name: typst-py
+  pypi_name: typst
+  version: "0.14.9"
+
+package:
+  name: ${{ name|lower }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/${{ pypi_name[0] }}/${{ pypi_name }}/typst-${{ version }}.tar.gz
+  sha256: 53a7ee0825c127c100023685eeb8fb911226d7ad9ae861a370c11bb0f5c160cc
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - if: build_platform != target_platform
+      then: python
+    - if: build_platform != target_platform
+      then: cross-python_${{ target_platform }}
+    - if: build_platform != target_platform
+      then: maturin
+    - ${{ compiler('c') }}
+    - ${{ stdlib("c") }}
+    - ${{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - make
+  host:
+    - python
+    - maturin >=1.0,<2.0
+    - pip
+  run:
+    - python
+
+tests:
+  - python:
+      imports:
+        - typst
+      pip_check: true
+
+about:
+  summary: Python binding to typst
+  license: Apache-2.0
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  homepage: https://github.com/messense/typst-py
+
+extra:
+  recipe-maintainers:
+    - freundTech
+    - pavelzw
